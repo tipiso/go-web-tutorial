@@ -1,9 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
 
@@ -41,6 +43,14 @@ func RegisterBooksRouter(r *mux.Router) {
 }
 
 func main() {
+	// Configure the database connection (always check errors)
+	db, err := sql.Open("mysql", "root:1234@(dev-mysql:3306)/dbname?parseTime=true")
+
+	fmt.Printf(err.Error())
+	// Initialize the first connection to the database, to see if everything works correctly.
+	// Make sure to check the error.
+	err = db.Ping()
+
 	r := mux.NewRouter()
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
