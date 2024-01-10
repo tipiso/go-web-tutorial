@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -44,22 +45,44 @@ func RegisterBooksRouter(r *mux.Router) {
 
 func main() {
 	// Configure the database connection (always check errors)
-	db, err := sql.Open("mysql", "root:1234@(dev-mysql:3306)/dbname?parseTime=true")
-
-	fmt.Printf(err.Error())
+	fmt.Println("Connecting to db")
+	db, err := sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/GoWebDev")
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
 	// Initialize the first connection to the database, to see if everything works correctly.
 	// Make sure to check the error.
-	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	}
 
-	r := mux.NewRouter()
-	fs := http.FileServer(http.Dir("static/"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	query := `
+		CREATE TABLE users (
+			id INT AUTO_INCREMENT,
+			username TEXT NOT NULL,
+			password TEXT NOT NULL,
+			created_at DATETIME,
+			PRIMARY KEY (id)
+		);`
 
-	RegisterBooksRouter(r)
+	_, err = db.Exec(query)
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hoy, Info from server!!!")
-	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("Connected")
+	// r := mux.NewRouter()
+	// fs := http.FileServer(http.Dir("static/"))
+	// http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	http.ListenAndServe(":80", r)
+	// RegisterBooksRouter(r)
+
+	// r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Fprintf(w, "Hoy, Info from server!!!")
+	// })
+
+	// http.ListenAndServe(":80", r)
 }
