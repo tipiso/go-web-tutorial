@@ -1,9 +1,8 @@
 package main
 
 import (
-	"database/sql"
+	"go-web-tut/data"
 	"fmt"
-	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -44,36 +43,7 @@ func RegisterBooksRouter(r *mux.Router) {
 }
 
 func main() {
-	// Configure the database connection (always check errors)
-	fmt.Println("Connecting to db")
-	db, err := sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/GoWebDev")
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	// Initialize the first connection to the database, to see if everything works correctly.
-	// Make sure to check the error.
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
-	}
-
-	query := `
-		CREATE TABLE users (
-			id INT AUTO_INCREMENT,
-			username TEXT NOT NULL,
-			password TEXT NOT NULL,
-			created_at DATETIME,
-			PRIMARY KEY (id)
-		);`
-
-	_, err = db.Exec(query)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Print("Connected")
+	data.SetupDB()
 	// r := mux.NewRouter()
 	// fs := http.FileServer(http.Dir("static/"))
 	// http.Handle("/static/", http.StripPrefix("/static/", fs))
