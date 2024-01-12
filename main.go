@@ -43,7 +43,11 @@ func RegisterBooksRouter(r *mux.Router) {
 }
 
 func main() {
-	data.SetupDB()
+	db := data.SetupDB()
+
+	data.CreateUser(db, data.UserDTO{"Dzon", "1234"})
+	users := data.GetUsers(db)
+	fmt.Printf("%v", users)
 	// r := mux.NewRouter()
 	// fs := http.FileServer(http.Dir("static/"))
 	// http.Handle("/static/", http.StripPrefix("/static/", fs))
