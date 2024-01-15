@@ -2,6 +2,9 @@ package main
 
 import (
 	"go-web-tut/data"
+	"go-web-tut/handlers"
+
+	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -9,37 +12,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func CreateBook(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Create Book")
-}
-
-func AllBooks(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Create Book")
-}
-
-func GetBook(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Create Book")
-}
-
-func RegisterBooksRouter(r *mux.Router) {
+func RegisterUsersRouter(r *mux.Router, db *sql.DB) {
 	// Specific path restriction
-	bookrouter := r.PathPrefix("/books").Subrouter()
-	bookrouter.HandleFunc("/", AllBooks).Methods("GET")
-	bookrouter.HandleFunc("/{title}", GetBook).Methods("GET")
-
-	// Example route handlers
-	bookrouter.HandleFunc("/{title}", CreateBook).Methods("POST")
-	// r.HandleFunc("/books/{title}", ReadBook).Methods("GET")
-	// r.HandleFunc("/books/{title}", UpdateBook).Methods("PUT")
-	// r.HandleFunc("/books/{title}", DeleteBook).Methods("DELETE")
-
-	bookrouter.HandleFunc("/{title}/page/{page}", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		title := vars["title"]
-		page := vars["page"]
-
-		fmt.Fprintf(w, "You've requested the book: %s on page %s\n", title, page)
-	})
+	usersrouter := r.PathPrefix("/users").Subrouter()
+	usersrouter.HandleFunc("/{userID}", handlers.GetUserHandler)
+	usersrouter.HandleFunc("/delete/{userID}", handlers.DeleteUserHandler)
+	usersrouter.HandleFunc("", handlers.GetUsersHandler)
+	usersrouter.HandleFunc("/create", handlers.CreateUserHandler)
 }
 
 func main() {

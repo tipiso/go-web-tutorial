@@ -15,12 +15,40 @@ type UserDTO struct {
 
 type user struct {
 	id        int
-    username  string
-    password  string
-    createdAt time.Time
+	username  string
+	password  string
+	createdAt time.Time
 }
 
-func GetUsers(db *sql.DB) ([]user) {
+func DeleteUser(db *sql.DB, userID string) string {
+	_, err := db.Exec(`DELETE FROM users WHERE id = ?`, userID)
+
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	return userID
+}
+
+func GetUser(db *sql.DB, userID string) user {
+	rows, err := db.Query(`SELECT id, username, password, created_at FROM users WHERE id = ?`, userID)
+	defer rows.Close()
+
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	var user user
+	scanErr := rows.Scan(&user.id, &user.username, &user.password, &user.createdAt)
+
+	if scanErr != nil {
+		fmt.Printf(err.Error())
+	}
+
+	return user
+}
+
+func GetUsers(db *sql.DB) []user {
 	rows, err := db.Query(`SELECT id, username, password, created_at FROM users`)
 	defer rows.Close()
 

@@ -7,6 +7,11 @@ require (
 	go-web-tut/data v0.0.0-00010101000000-000000000000
 )
 
-require github.com/go-sql-driver/mysql v1.7.1
+require (
+	github.com/go-sql-driver/mysql v1.7.1
+	go-web-tut/handlers v0.0.0-00010101000000-000000000000
+)
 
 replace go-web-tut/data => ./data
+
+replace go-web-tut/handlers => ./handlers
