@@ -1,11 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"go-web-tut/data"
 	"go-web-tut/handlers"
-
-	"database/sql"
-	"fmt"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -24,18 +22,16 @@ func RegisterUsersRouter(r *mux.Router, db *sql.DB) {
 func main() {
 	db := data.SetupDB()
 
-	data.CreateUser(db, data.UserDTO{"Dzon", "1234"})
-	users := data.GetUsers(db)
-	fmt.Printf("%v", users)
-	// r := mux.NewRouter()
-	// fs := http.FileServer(http.Dir("static/"))
-	// http.Handle("/static/", http.StripPrefix("/static/", fs))
+	r := mux.NewRouter()
+	
+	fs := http.FileServer(http.Dir("static/"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// RegisterBooksRouter(r)
+	RegisterUsersRouter(r, db)
 
 	// r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Fprintf(w, "Hoy, Info from server!!!")
 	// })
 
-	// http.ListenAndServe(":80", r)
+	http.ListenAndServe(":80", r)
 }

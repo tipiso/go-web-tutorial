@@ -2,15 +2,16 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"go-web-tut/data"
+	"html/template"
 	"net/http"
-	"encoding/json"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
- 
+
 var db *sql.DB = data.SetupDB()
 
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +22,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint hit: get user", user)
 }
 
-func DeleteUserHandler (w http.ResponseWriter, r *http.Request) {
+func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID := vars["userID"]
 
@@ -29,12 +30,15 @@ func DeleteUserHandler (w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint hit: delete user", user)
 }
 
-func GetUsersHandler (w http.ResponseWriter, r *http.Request) {
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users := data.GetUsers(db)
 	fmt.Println("Endpoint hit: get users", users)
+	tmpl := template.Must(template.ParseFiles("static/html/layout.html"))
+
+	tmpl.Execute(w, users)
 }
 
-func CreateUserHandler (w http.ResponseWriter, r *http.Request) {
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user data.UserDTO
 	json.NewDecoder(r.Body).Decode(&user)
 
